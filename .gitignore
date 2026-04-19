@@ -1,0 +1,9 @@
+data/creditcard.csv
+data/cleaned.csv
+models/
+.env
+__pycache__/
+.ipynb_checkpoints
+venv/
+node_modules/
+.vscode/
