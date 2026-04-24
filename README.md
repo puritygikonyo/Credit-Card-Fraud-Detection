@@ -50,3 +50,39 @@ There are 12 new engineered features to the original dataframe (31 --> 43 total 
 
 #### Feature selection
 Not all engineered features help, some hurt
+
+### Credit Card Fraud Detection — Feature Pipeline
+
+## What This Pipeline Does
+
+This pipeline prepares raw transaction data for a fraud detection
+machine learning model. Think of it as a preparation stage — the
+raw data comes in, gets enriched with new signals, trimmed of
+redundant information, and saved in a clean format ready for the
+model to learn from.
+
+The pipeline runs automatically with one command:
+
+```bash
+python features/run_features.py
+```
+
+---
+
+## The Data
+
+The pipeline works on credit card transaction records. Each row
+is one transaction made by a cardholder. The data contains:
+
+- **283,726 transactions** — nearly 284,000 real credit card purchases
+- **31 original columns** — including the transaction amount, a
+  timestamp, 28 anonymised security signals (V1–V28), and a label
+  telling us whether each transaction was fraudulent or not
+
+The anonymised signals (V1–V28) were scrambled by the data provider
+to protect cardholder privacy, but they still carry patterns that
+a fraud detection model can learn from.
+
+---
+
+## Stage 1 — Loading the Data
