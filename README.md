@@ -16,3 +16,34 @@ Dataset: 284,807 transactions × 31 features. All features are numeric (float64/
 - 'Amount' is heavily right-skewed — apply log transform before scaling.
   
 - Class imbalance is extreme — a naïve model predicting "legitimate" for every transaction scores 99.83% accuracy while catching zero fraud cases. Oversampling or class weighting is essential before training.
+
+
+### Feature Engineering
+There are 12 new engineered features to the original dataframe (31 --> 43 total columns). Zero null introduced.
+
+#### Category A — Domain-Specific (5 features)
+
+| Feature | Logic |
+|---|---|
+| `hour_of_day` | Time in seconds converted to 0–23 hour |
+| `is_night_transaction` | 1 if hour < 5 (midnight–5am = higher fraud risk) |
+| `log_amount` | `log1p(Amount)` — fixes right skew for scaling |
+| `is_round_amount` | 1 if Amount is a whole number (card-testing pattern) |
+| `is_small_amount` | 1 if Amount < $1.00 (card verification tactic) |
+
+#### Category B — Statistical (3 features)
+
+| Feature | Logic |
+|---|---|
+| `top3_fraud_signal` | V17 + V14 + V12 — composite fraud pressure score |
+| `pca_vector_magnitude` | L2 norm of V1–V28 — distance from normal cluster |
+| `pca_signal_std` | Std dev of V1–V28 per row — anomalous dispersion signal |
+
+#### Category C — Interaction (4 features)
+
+| Feature | Logic |
+|---|---|
+| `v14_v17_interaction` | V14 × V17 — joint extreme negative = compounded fraud signal |
+| `v12_v14_interaction` | V12 × V14 — same logic for 2nd and 3rd predictors |
+| `amount_v17_ratio` | Amount / (abs(V17) + ε) — disproportionate amount vs anomaly |
+| `log_amount_x_fraud_signal` | `log_amount` × `top3_fraud_signal` — large transaction + fraud pressure |
