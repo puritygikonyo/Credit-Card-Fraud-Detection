@@ -47,3 +47,6 @@ There are 12 new engineered features to the original dataframe (31 --> 43 total 
 | `v12_v14_interaction` | V12 × V14 — same logic for 2nd and 3rd predictors |
 | `amount_v17_ratio` | Amount / (abs(V17) + ε) — disproportionate amount vs anomaly |
 | `log_amount_x_fraud_signal` | `log_amount` × `top3_fraud_signal` — large transaction + fraud pressure |
+
+#### Feature selection
+Not all engineered features help, some hurt
