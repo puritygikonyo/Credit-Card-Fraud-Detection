@@ -1,5 +1,3 @@
-#Certainly! Below is a possible implementation of your `my-ml-project/data/data_cleaner.py` script with the specified functionality. This script is designed to handle nulls, remove duplicates, convert data types, and save the cleaned dataset while running a quality gate on the cleaned data.
-
 
 import os
 import pandas as pd
@@ -74,4 +72,3 @@ if __name__ == "__main__":
 ##1. **Adjust File Paths and Column Names:** You must modify the file paths (`raw_data_path`) and target column name (`target_column`) to fit your specific dataset.
 ##2. **Install Required Libraries:** Ensure you have `pandas` installed in your Python environment.
 ##3. **Time Series:** Set the `time_series` flag to `True` if you are dealing with a time series dataset, as this will forward-fill missing values instead of dropping them.
-
