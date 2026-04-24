@@ -157,90 +157,114 @@ All 12 signals were created successfully with zero missing values
 across all 283,726 transactions.
 
 ---
+### Stage 3 — Feature Selection (Removing Redundancy)
 
-## Stage 3 — Feature Selection
-Features entering : 42
-Features dropped  : 13
-Features kept     : 29
-Time taken        : 6.92 seconds
+| Detail | Value |
+|---|---|
+| Signals entering selection | 42 |
+| Signals dropped | 1 |
+| Signals kept | 41 |
+| Time taken | 9.80 seconds |
 
-### What is feature selection?
+> **What is feature selection?** Not every signal is equally useful. Some signals carry almost identical information — keeping both is like hiring two employees to do the exact same job. Feature selection finds and removes the redundant ones so the model only receives signals that each contribute something unique.
 
-Not every signal is equally useful. Some signals carry almost
-identical information — keeping both is like having two employees
-do the exact same job. Feature selection removes the redundant
-ones, leaving only signals that each contribute something unique.
+One signal was correctly removed:
 
-Two types of signals were removed:
-
-**Removed — Too similar to another signal (high correlation)**
-
-| Removed | Reason | Kept instead |
+| Signal Dropped | Reason | Signal Kept Instead |
 |---|---|---|
-| `pca_signal_std` | 99.89% identical to `pca_vector_magnitude` | `pca_vector_magnitude` |
+| pca_signal_std | 99.89% identical to pca_vector_magnitude — both were measuring the same thing | pca_vector_magnitude |
 
-These two signals were measuring almost exactly the same thing —
-how unusual a transaction's security profile looks. Keeping both
-would add no value and could confuse the model.
-
-**Removed — Variance filter (note)**
-The remaining 12 dropped features were caught by the variance
-filter, which is currently being tuned. The 29 features kept
-include all 28 original PCA security signals plus the Time column,
-which form a solid foundation for the model.
-
-### Features kept for the model (29 features)
-
-| # | Feature | What it represents |
-|---|---|---|
-| 1 | Time | When the transaction occurred |
-| 2–29 | V1–V28 | The 28 anonymised security signals that carry fraud patterns |
+> **Important — What Changed vs. the Previous Run:** In the previous version, the near-constant filter was incorrectly discarding 12 legitimate signals at this stage. That bug has been fixed. In this updated run, zero signals were dropped by the near-constant filter, meaning all 12 engineered fraud signals successfully pass through to the model.
 
 ---
 
-## Stage 4 — Saving the Output
-Output file    : data/features.csv
-Rows saved     : 283,726
-Columns saved  : 30  (29 features + Class label)
-Time taken     : 61.98 seconds
+### Stage 4 — Saving the Output
 
-The final dataset is saved to `data/features.csv`. This file
-contains all 283,726 transactions, each with 29 input signals
-and the Class label (0 = legitimate, 1 = fraud). This file is
-the direct input to the next stage — model training.
+| Detail | Value |
+|---|---|
+| Output file | data/features.csv |
+| Rows saved | 283,726 |
+| Columns saved | 42 (41 signals + Class fraud label) |
+| Time taken | 87.76 seconds |
+
+The final, prepared dataset is saved to disk. This file is the direct input to model training. Every one of the 283,726 transactions is saved with all 41 input signals and the fraud label. The model training step will read this file and use it to learn the difference between legitimate and fraudulent transactions.
 
 ---
 
 ## Full Pipeline Summary
 
-| Stage | What happened | Time |
-|---|---|---|
-| Load data | 283,726 transactions read from disk | 7.63s |
-| Feature engineering | 12 new signals created, 31 → 43 columns | 2.47s |
-| Feature selection | Redundant signals removed, 43 → 30 columns | 6.92s |
-| Save output | Final dataset written to data/features.csv | 61.98s |
-| **Total** | **Full pipeline completed** | **79.08s** |
+| Stage | What Happened | Outcome | Time |
+|---|---|---|---|
+| 1 — Load Data | 283,726 transaction records read from disk | All rows and columns present | 14.84s |
+| 2 — Feature Engineering | 12 new fraud signals created from existing data | Columns: 31 → 43 | 5.44s |
+| 3 — Feature Selection | 1 duplicate signal removed; 0 incorrectly dropped (bug fixed) | Columns: 43 → 42 | 9.80s |
+| 4 — Save Output | Final dataset written to data/features.csv | 283,726 rows, 42 columns saved | 87.76s |
+| **Total** | **Complete pipeline run** | **data/features.csv ready** | **118.76s** |
 
 ---
 
-## What Comes Next
+## Full List of Signals Passed to the Model (41 Total)
 
-The `data/features.csv` file is now ready for **model training**.
-The next stage will use these 29 signals to teach a machine
-learning algorithm to tell the difference between legitimate and
-fraudulent transactions — learning from the patterns in V1–V28
-and the Time column to make that judgement automatically on
-new, unseen transactions.
+| # | Signal | Type | What It Represents |
+|---|---|---|---|
+| 1 | Time | Original | When the transaction occurred |
+| 2 | Amount | Original | The transaction amount in dollars |
+| 3–30 | V1 to V28 | Original | 28 anonymised security indicators carrying fraud patterns |
+| 31 | hour_of_day | Engineered | Hour of the day (0–23) |
+| 32 | is_night_transaction | Engineered | 1 if between midnight and 5am, else 0 |
+| 33 | log_amount | Engineered | Transaction amount on a compressed scale |
+| 34 | is_round_amount | Engineered | 1 if a perfectly round amount, else 0 |
+| 35 | is_small_amount | Engineered | 1 if under $1.00, else 0 |
+| 36 | top3_fraud_signal | Engineered | Combined score from V12 + V14 + V17 |
+| 37 | pca_vector_magnitude | Engineered | How far the transaction sits from the normal cluster |
+| 38 | v14_v17_interaction | Engineered | Combined extreme signal from V14 and V17 |
+| 39 | v12_v14_interaction | Engineered | Combined extreme signal from V12 and V14 |
+| 40 | amount_v17_ratio | Engineered | Amount disproportionate to V17 suspicion level |
+| 41 | log_amount_x_fraud_signal | Engineered | Large amount combined with high fraud pressure score |
 
 ---
 
-## Key Numbers to Remember
+## What Comes Next — Model Training
+
+The `data/features.csv` file is the starting point for the next phase: training the fraud-detection model.
+
+A machine learning algorithm will read the 41 signals for every transaction and look for patterns that separate fraudulent transactions from legitimate ones. Once trained, the model will be able to assess a brand-new, unseen transaction and decide — based on those same 41 signals — whether it is likely to be fraud.
+
+**Handoff summary:**
+- Input file: `data/features.csv`
+- Transactions: 283,726
+- Signals available to the model: 41
+- Fraud labels included: Yes (Class column)
+
+---
+
+## Key Numbers at a Glance
 
 | Metric | Value |
 |---|---|
 | Transactions processed | 283,726 |
-| Original signals | 31 |
-| New signals created | 12 |
-| Final signals for model | 29 |
+| Original signals in raw data | 31 |
+| New signals created by engineering | 12 |
+| Signals passed to model (final) | 41 |
+| Signals incorrectly dropped in previous version | 12 (bug now fixed) |
 | Missing values introduced | 0 |
-| Total processing time | 79 seconds |
+| Total pipeline processing time | 118.76 seconds |
+| Output file location | data/features.csv |
+
+---
+
+## Glossary
+
+| Term | Plain-English Meaning |
+|---|---|
+| Feature / Signal | A single piece of information about a transaction (e.g. the amount, the time, whether it was a round number) |
+| Feature Engineering | Creating new, more informative signals from existing raw data to help the model spot patterns |
+| Feature Selection | Removing signals that are redundant or unhelpful so the model is not confused by duplicate information |
+| Model / Machine Learning Model | A computer program that learns patterns from historical data and uses them to make predictions on new data |
+| PCA Signals (V1–V28) | 28 anonymised security indicators scrambled to protect privacy but still carrying fraud-related patterns |
+| Class Label | The column that tells us the answer — 0 = legitimate transaction, 1 = confirmed fraud |
+| Near-Constant Signal | A signal with almost the same value for every transaction — useless to the model because it provides no variation to learn from |
+| Correlation | A measure of how similar two signals are. If two signals are 99% correlated, they are nearly identical and one can be safely removed |
+| Pipeline | A sequence of automated steps that transform raw data into a clean, prepared output file — each step feeds into the next |
+
+---
