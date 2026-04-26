@@ -1,5 +1,7 @@
 data/creditcard.csv
 data/cleaned.csv
+data/creditcard_engineered.csv
+data/features.csv
 models/
 .env
 __pycache__/
