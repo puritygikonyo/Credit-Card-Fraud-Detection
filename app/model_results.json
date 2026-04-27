@@ -1,0 +1,161 @@
+{
+  "models": [
+    {
+      "name": "Logistic Regression",
+      "type": "baseline",
+      "selected": false,
+      "eliminated": false,
+      "recall": 0.6526,
+      "precision": 0.8732,
+      "f1": 0.747,
+      "auc_roc": 0.9279,
+      "cv_mean_auc": 0.946,
+      "cv_std_auc": 0.0252,
+      "train_time_seconds": 160.3
+    },
+    {
+      "name": "Random Forest",
+      "type": "candidate",
+      "selected": false,
+      "eliminated": true,
+      "recall": 0.712,
+      "precision": 0.921,
+      "f1": 0.803,
+      "auc_roc": 0.961,
+      "cv_mean_auc": 0.958,
+      "cv_std_auc": 0.018,
+      "train_time_seconds": 3000
+    },
+    {
+      "name": "LightGBM",
+      "type": "candidate",
+      "selected": false,
+      "eliminated": false,
+      "recall": 0.8,
+      "precision": 0.883,
+      "f1": 0.839,
+      "auc_roc": 0.973,
+      "cv_mean_auc": 0.971,
+      "cv_std_auc": 0.014,
+      "train_time_seconds": 62
+    },
+    {
+      "name": "XGBoost + Optuna",
+      "type": "winner",
+      "selected": true,
+      "eliminated": false,
+      "recall": 0.7684,
+      "precision": 0.7849,
+      "f1": 0.7766,
+      "auc_roc": 0.975,
+      "cv_mean_auc": 0.9858,
+      "cv_std_auc": 0.0072,
+      "train_time_seconds": 43
+    }
+  ],
+  "feature_importance": [
+    {
+      "feature": "V14",
+      "importance": 0.338908
+    },
+    {
+      "feature": "v12_v14_interaction",
+      "importance": 0.127018
+    },
+    {
+      "feature": "pca_vector_magnitude",
+      "importance": 0.0797
+    },
+    {
+      "feature": "V4",
+      "importance": 0.050931
+    },
+    {
+      "feature": "V19",
+      "importance": 0.022659
+    },
+    {
+      "feature": "top3_fraud_signal",
+      "importance": 0.021614
+    },
+    {
+      "feature": "v14_v17_interaction",
+      "importance": 0.020884
+    },
+    {
+      "feature": "V12",
+      "importance": 0.019657
+    },
+    {
+      "feature": "V8",
+      "importance": 0.019092
+    },
+    {
+      "feature": "V20",
+      "importance": 0.018184
+    },
+    {
+      "feature": "V17",
+      "importance": 0.016427
+    },
+    {
+      "feature": "V10",
+      "importance": 0.014961
+    },
+    {
+      "feature": "log_amount",
+      "importance": 0.012762
+    },
+    {
+      "feature": "V7",
+      "importance": 0.012088
+    },
+    {
+      "feature": "V13",
+      "importance": 0.011494
+    }
+  ],
+  "confusion_matrix": {
+    "tn": 56631,
+    "fp": 20,
+    "fn": 22,
+    "tp": 73
+  },
+  "timeline": [
+    {
+      "day": "Day 1",
+      "title": "Problem Scoping & EDA",
+      "desc": "Explored the dataset, identified the 0.17% fraud rate, and decided AUC-ROC and Recall would be the primary metrics."
+    },
+    {
+      "day": "Day 2",
+      "title": "Feature Engineering",
+      "desc": "Built 12 features on top of the 28 PCA columns: log-amount, z-score, hour-of-day, rolling velocity, and interaction terms."
+    },
+    {
+      "day": "Day 3",
+      "title": "Baseline Models",
+      "desc": "Trained Logistic Regression and Random Forest as baselines. Random Forest was eliminated \u2014 50-minute training time was unacceptable."
+    },
+    {
+      "day": "Day 4",
+      "title": "Candidate Models",
+      "desc": "Evaluated LightGBM and XGBoost. LightGBM had higher raw recall; XGBoost was more stable across CV folds."
+    },
+    {
+      "day": "Day 5",
+      "title": "Optuna Hyperparameter Tuning",
+      "desc": "Ran 30 Optuna TPE trials over 3.5 hours. Best CV AUC rose from 0.972 to 0.986. n_estimators, max_depth, and learning_rate were most sensitive."
+    },
+    {
+      "day": "Day 6",
+      "title": "MLflow Experiment Tracking",
+      "desc": "Logged all runs, parameters, and artifacts to MLflow. Should have done this from Day 1 \u2014 several early runs had to be reconstructed."
+    },
+    {
+      "day": "Day 7",
+      "title": "Evaluation & Portfolio App",
+      "desc": "Final evaluation suite, confusion matrix, feature importance analysis, and this Streamlit portfolio app."
+    }
+  ]
+}
