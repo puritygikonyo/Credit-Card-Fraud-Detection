@@ -9,3 +9,5 @@ __pycache__/
 venv/
 node_modules/
 .vscode/
+data/features.csv 
+data/creditcard_engineered.csv 
