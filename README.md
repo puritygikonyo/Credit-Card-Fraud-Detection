@@ -1,4 +1,5 @@
 # CREDIT CARD FRAUD DETECTION
+**[Live Demo](https://credit-card-fraud-detection-portfolio-project.streamlit.app/)**
 ### Data
 The raw and engineered datasets are not included in this repo due to file size limits.
 Download the original dataset from Kaggle:

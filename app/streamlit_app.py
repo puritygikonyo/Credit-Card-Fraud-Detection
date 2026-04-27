@@ -1954,7 +1954,7 @@ elif "Built" in page:
     gh_col, _ = st.columns([2, 3])
     with gh_col:
         st.markdown(f"""
-        <a href='https://github.com' target='_blank' style='text-decoration:none;'>
+        <a href='https://github.com/puritygikonyo/Credit-Card-Fraud-Detection' target='_blank' style='text-decoration:none;'>
         <div style='background:{C["navy2"]};border:1px solid {C["border"]};
                     color:{C["white"]};border-radius:8px;
                     padding:0.9rem 1.3rem;display:flex;align-items:center;gap:0.8rem;
@@ -1974,3 +1974,5 @@ elif "Built" in page:
         <div class='footer-txt'>Built with Python · Questions? Reach out via GitHub.</div>
     </div>
     """, unsafe_allow_html=True)
+
+
