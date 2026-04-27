@@ -1262,3 +1262,54 @@ A machine learning fraud detection model has been successfully built, tested, an
 | MLflow experiment | `credit_card_fraud_detection` |
 
 ---
+
+## Build the API and Dashboard
+
+
+## Docker and CI/CD
+# Running the App
+
+There are two ways to run this project. You only need **one running at a time** — both serve the same app.
+
+---
+
+## Option 1: Streamlit Direct (Development)
+
+Use this during active development. Changes to code are reflected faster and easier to restart.
+
+```bash
+streamlit run app/main.py
+```
+
+Access the app at: **http://localhost:8503**
+
+---
+
+## Option 2: Docker (Production Testing)
+
+Use this to test the final packaged version of the app, simulating how it runs in production or deployment.
+
+```bash
+docker build -t my-ml-project .
+docker run -p 8504:8501 my-ml-project
+```
+
+Access the app at: **http://localhost:8504**
+
+> **Note:** You may see a warning: `"general.email" is not a valid config option` — this is harmless and does not affect the app.
+
+---
+
+## Port Reference
+
+| Method | Command | URL |
+|---|---|---|
+| Streamlit direct | `streamlit run app/main.py` | http://localhost:8503 |
+| Docker | `docker run -p 8504:8501 my-ml-project` | http://localhost:8504 |
+
+---
+
+## When to Use Which
+
+- **Streamlit direct** → Day-to-day development and quick iteration
+- **Docker** → Final testing before deployment to make sure everything works inside the container

@@ -1,0 +1,22 @@
+# Virtual environment — this is why your build context was 697MB
+venv/
+.venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

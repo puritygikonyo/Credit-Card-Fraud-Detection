@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  streamlit:
+    # ── Build ────────────────────────────────────────────────────────────────
+    build:
+      context: .               # build from the project root (where Dockerfile lives)
+      dockerfile: Dockerfile
+
+    # ── Identity ─────────────────────────────────────────────────────────────
+    container_name: fraud-dashboard
+
+    # ── Ports ────────────────────────────────────────────────────────────────
+    # host:container — visit http://localhost:8501 in your browser
+    ports:
+      - "8501:8501"
+
+    # ── Volumes ──────────────────────────────────────────────────────────────
+    # Mounts your local data/ and models/ folders into the container at runtime.
+    # This means:
+    #   - You can update data/predictions.csv or models/*.pkl without rebuilding
+    #   - The container always reads the latest files from your machine
+    #   - Nothing sensitive is baked into the image layer
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+
+    # ── Environment ───────────────────────────────────────────────────────────
+    # Keep Streamlit quiet in container logs and disable the dev file watcher
+    # (not useful inside Docker — use 'docker-compose up --build' to reload).
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+      - PYTHONUNBUFFERED=1          # ensures Python logs appear in docker logs instantly
+
+    # ── Restart policy ────────────────────────────────────────────────────────
+    # "unless-stopped": restarts automatically after crashes or system reboots,
+    # but stays stopped if you manually ran 'docker-compose stop'.
+    restart: unless-stopped
+
+    # ── Resource limits ───────────────────────────────────────────────────────
+    # Prevents the container from consuming all available memory if something
+    # goes wrong (e.g. a huge SHAP computation). Adjust to your machine.
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: "1.0"
+        reservations:
+          memory: 512m
+          cpus: "0.25"
