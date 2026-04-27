@@ -789,12 +789,12 @@ with st.sidebar:
                     color:{C["blue2"]};margin-bottom:5px;'>Dataset</div>
         283,726 transactions<br>
         473 fraud cases (0.17%)<br>
-        European cardholders
+        European Cardholders Transaction Dataset
     </div>
     """, unsafe_allow_html=True)
     st.markdown("---")
     st.markdown(f"""
-    <a href='https://github.com' target='_blank'
+    <a href='https://github.com/puritygikonyo/Credit-Card-Fraud-Detection' target='_blank'
        style='font-size:0.78rem;color:{C["blue2"]};font-weight:600;'>
         ↗ View on GitHub
     </a>
@@ -821,18 +821,15 @@ if "Executive" in page:
 
     st.markdown(f"""
     <div class='hero'>
-        <div class='hero-eyebrow'>Credit Card Fraud Detection · Executive Summary</div>
+        <div class='hero-eyebrow'>Credit Card Fraud Detection · Financial Crime Prevention · Executive Summary</div>
         <div class='hero-title'> Behind every metric is a transaction that went right or wrong </div>
         <div class='hero-sub'>
-                This model was tested on 283,726 real European card transactions. The metrics below are not 
-                just percentages — they translate to fraud cases stopped, accounts protected, and analyst 
-                hours saved. Because behind every missed detection is a drained account, a blocked card, 
-                and a customer who trusted their bank.
+                This model was trained on 283,726 real European card transactions. The metrics below are not just percentages - they translate to fraud cases stopped, accounts protected, and analyst hours saved. Because behind every missed detection is a drained account, a blocked card, and a disappointed customer who trusted their bank.
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='section-eyebrow'>Business Impact · Test Window</div>",
+    st.markdown("<div class='section-eyebrow'>Business Impact </div>",
                 unsafe_allow_html=True)
     k1, k2, k3, k4, k5 = st.columns(5)
     with k1:
@@ -1037,17 +1034,11 @@ if "Executive" in page:
             declined card causes immediate reputational damage.</div>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div style='font-size:0.78rem;color:{C["slate"]};margin-top:0.5rem;'>
-        → See the <strong style='color:{C["white"]};'>Threshold Decision</strong> section
-        in Model Results for a live interactive exploration of this trade-off
-        using actual model predictions.
-    </div>
-    """, unsafe_allow_html=True)
+
 
     st.markdown(f"""
     <div class='footer'>
-        <div class='footer-txt'>🛡️ Credit Card Fraud Detection · ML Portfolio · April 2026</div>
+        <div class='footer-txt'>🛡️ Credit Card Fraud Detection · Purity Gikonyo ML Portfolio · April 2026</div>
         <div class='footer-txt'>Model: XGBoost + Optuna · Dataset: 283,726 European transactions (anonymised)</div>
     </div>
     """, unsafe_allow_html=True)
