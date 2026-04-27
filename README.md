@@ -1,4 +1,8 @@
 # CREDIT CARD FRAUD DETECTION
+### Data
+The raw and engineered datasets are not included in this repo due to file size limits.
+Download the original dataset from Kaggle:
+https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
 ### Exploratory Data Analysis
 Dataset: 284,807 transactions × 31 features. All features are numeric (float64/int64). No missing values across any column. Target variable (Class) is binary: 0 = legitimate, 1 = fraud. Data is complete, well-structured, and ready for modelling with no cleaning or gap-filling required.
 

@@ -822,12 +822,12 @@ if "Executive" in page:
     st.markdown(f"""
     <div class='hero'>
         <div class='hero-eyebrow'>Credit Card Fraud Detection · Executive Summary</div>
-        <div class='hero-title'>Every number here<br>is money.</div>
+        <div class='hero-title'> Behind every metric is a transaction that went right or wrong </div>
         <div class='hero-sub'>
-            This model ran on 283,726 real European card transactions.
-            The metrics below are not percentages on a leaderboard —
-            they are fraud cases stopped, customer accounts protected,
-            and analyst hours saved.
+                This model was tested on 283,726 real European card transactions. The metrics below are not 
+                just percentages — they translate to fraud cases stopped, accounts protected, and analyst 
+                hours saved. Because behind every missed detection is a drained account, a blocked card, 
+                and a customer who trusted their bank.
         </div>
     </div>
     """, unsafe_allow_html=True)
