@@ -64,7 +64,7 @@ or not, can understand and act on the findings.
 
 ## Live Dashboard
 
-👉 **[credit-card-fraud-detection-portfolio-project.streamlit.app](https://credit-card-fraud-detection-portfolio-project.streamlit.app/)**
+👉 **[credit-card-fraud-detection-portfolio-project.streamlit.app](https://credit-card-fraud-detection-portfolio-project.streamlit.app)**
 
 *No login required. Works on your phone. Opens in your browser.*
 
@@ -114,10 +114,10 @@ These are the metrics this project optimises for and reports honestly.
 
 ## The Data
 
-**Source:** [Kaggle — ULB Credit Card Fraud Dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+**Source:** [Kaggle — Credit Card Fraud Dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
 
 > The raw dataset is not included in this repository due to file size limits.
-> Download it from Kaggle and place it in `data/raw/` before running the pipeline.
+> Download it from Kaggle and place it in `data/` before running the pipeline.
 
 | Detail | Value |
 |---|---|

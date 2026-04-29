@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 from sklearn.metrics import precision_score, recall_score, f1_score
 from datetime import datetime
 
@@ -50,6 +51,561 @@ C = dict(
     white  = "#FFFFFF",
     off    = "#E8EDF6",
 )
+
+
+
+ARCHITECTURE_DIAGRAM_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:   #08122B;
+    --navy2:  #0D1E3F;
+    --navy3:  #162847;
+    --blue:   #1D6AF5;
+    --blue2:  #4B8BF7;
+    --teal:   #00C4A1;
+    --teal2:  #00E5BB;
+    --red:    #F0364A;
+    --red2:   #FF6674;
+    --amber:  #F5A623;
+    --amber2: #FFBF4D;
+    --slate:  #8B9FC2;
+    --border: #1E2E50;
+    --bg:     #060F22;
+    --white:  #FFFFFF;
+    --off:    #E8EDF6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--off);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100%;
+  }
+
+  /* ── Outer wrapper ── */
+  .arch-wrap {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem 1.6rem 1.2rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ── Header badges ── */
+  .prod-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(240,54,74,0.12);
+    border: 1px solid rgba(240,54,74,0.3);
+    border-radius: 5px;
+    padding: 3px 9px;
+    font-size: 10px;
+    color: var(--red2);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .port-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(245,166,35,0.12);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 5px;
+    padding: 3px 9px;
+    font-size: 10px;
+    color: var(--amber2);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    margin-left: 8px;
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--slate);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Flow layout ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── Tier rows ── */
+  .tier {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 4px 0;
+  }
+  .tier-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--slate);
+    width: 64px;
+    text-align: right;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  /* ── Nodes ── */
+  .node {
+    border-radius: 8px;
+    border: 1px solid;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-align: center;
+    min-width: 110px;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .node:hover  { transform: translateY(-2px); box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
+  .node:active { transform: translateY(0px);  box-shadow: none; }
+  .node.active-node { outline: 2px solid var(--teal); outline-offset: 3px; }
+
+  .node-title { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--off); }
+  .node-sub   { font-size: 10px; margin-top: 3px; line-height: 1.4; opacity: 0.78; }
+
+  /* Node colour variants */
+  .n-blue  { background: rgba(29,106,245,0.12);  border-color: rgba(29,106,245,0.35);  color: #93B8FA; }
+  .n-teal  { background: rgba(0,196,161,0.10);   border-color: rgba(0,196,161,0.35);   color: #00E5BB; }
+  .n-amber { background: rgba(245,166,35,0.10);  border-color: rgba(245,166,35,0.35);  color: #FFBF4D; }
+  .n-green { background: rgba(52,199,89,0.10);   border-color: rgba(52,199,89,0.35);   color: #4CD964; }
+  .n-red   { background: rgba(240,54,74,0.10);   border-color: rgba(240,54,74,0.35);   color: #FF6674; }
+  .n-slate { background: rgba(139,159,194,0.08); border-color: rgba(139,159,194,0.25); color: var(--off); }
+
+  /* ── Inline pill badges inside nodes ── */
+  .pill {
+    display: inline-block;
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-top: 5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .pill-blue   { background: rgba(29,106,245,0.18);  color: #93B8FA;  }
+  .pill-teal   { background: rgba(0,196,161,0.18);   color: #00E5BB;  }
+  .pill-amber  { background: rgba(245,166,35,0.18);  color: #FFBF4D;  }
+
+  /* ── Arrow connectors ── */
+  .arrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 36px;
+  }
+  .arr-spacer { width: 64px; flex-shrink: 0; }
+  .arr-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    min-width: 130px;
+    gap: 0;
+  }
+  .arr-v {
+    width: 1px;
+    height: 10px;
+    background: var(--border);
+  }
+  .arr-label {
+    font-size: 9px;
+    color: var(--slate);
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--navy2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+  }
+  .arrowhead { font-size: 8px; color: var(--slate); line-height: 1; margin-top: -1px; }
+
+  /* ── Split arrow (two parallel columns) ── */
+  .split-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    gap: 0;
+  }
+  .split-spacer { width: 64px; flex-shrink: 0; }
+  .split-cols {
+    display: flex;
+    gap: 40px;
+    align-items: flex-end;
+  }
+  .split-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 36px;
+    justify-content: flex-end;
+  }
+
+  /* ── Section dividers ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0 6px 74px;
+  }
+  .div-line  { flex: 1; height: 1px; background: var(--border); }
+  .div-label {
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
+  /* ── Detail panel ── */
+  .detail-panel {
+    margin-top: 1.1rem;
+    padding: 1rem 1.1rem;
+    background: rgba(6,15,34,0.65);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-height: 80px;
+    transition: all 0.2s;
+  }
+  .detail-panel h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--teal2);
+    margin-bottom: 6px;
+    font-family: 'Epilogue', sans-serif;
+  }
+  .detail-panel p {
+    font-size: 11px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+  .detail-panel code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: rgba(29,106,245,0.14);
+    color: var(--blue2);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  /* ── Hint ── */
+  .hint {
+    font-size: 10px;
+    color: var(--slate);
+    text-align: center;
+    margin-top: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+  }
+
+  /* ── Mobile tweaks ── */
+  @media (max-width: 600px) {
+    .arch-wrap { padding: 1rem 0.9rem 1rem; border-radius: 10px; }
+    .tier-label { width: 44px; font-size: 8px; }
+    .node { min-width: 84px; padding: 8px 8px; }
+    .node-title { font-size: 11px; }
+    .node-sub   { font-size: 9px;  }
+    .pill { font-size: 8px; }
+    .legend { gap: 10px; }
+    .legend-item { font-size: 9px; }
+    .section-divider { margin-left: 52px; }
+    .split-cols { gap: 20px; }
+    .detail-panel p  { font-size: 11px; }
+    .detail-panel h4 { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="arch-wrap">
+
+  <!-- ── Header badges ── -->
+  <div>
+    <span class="prod-badge">
+      <span class="badge-dot" style="background:#FF6674;"></span>
+      Production
+    </span>
+    <span class="port-badge">
+      <span class="badge-dot" style="background:#FFBF4D;"></span>
+      This project
+    </span>
+  </div>
+
+  <!-- ── Legend ── -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#93B8FA;"></div> Payment layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#00E5BB;"></div> ML inference</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FFBF4D;"></div> Decision engine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FF6674;"></div> Human review</div>
+  </div>
+
+  <!-- ══════════════════ FLOW ══════════════════ -->
+  <div class="flow">
+
+    <!-- Tier: Customer -->
+    <div class="tier">
+      <div class="tier-label">customer</div>
+      <div class="node n-slate" id="nd-customer" onclick="showDetail('customer')" style="min-width:140px;">
+        <div class="node-title">💳 Card transaction</div>
+        <div class="node-sub">Online / POS terminal</div>
+      </div>
+    </div>
+
+    <!-- Arrow down -->
+    <div class="arrow-row">
+      <div class="arr-spacer"></div>
+      <div class="arr-col" style="min-width:140px;">
+        <div class="arr-v"></div>
+        <div class="arr-label">TLS · REST</div>
+        <div class="arr-v"></div>
+        <div class="arrowhead">▼</div>
+      </div>
+    </div>
+
+    <!-- Tier: Gateway -->
+    <div class="tier">
+      <div class="tier-label">gateway</div>
+      <div class="node n-blue" id="nd-gateway" onclick="showDetail('gateway')" style="min-width:140px;">
+        <div class="node-title">Payment processor</div>
+        <div class="node-sub">Stripe · Visa · Mastercard</div>
+        <div class="pill pill-blue">Prod only</div>
+      </div>
+    </div>
+
+    <!-- Arrow down -->
+    <div class="arrow-row">
+      <div class="arr-spacer"></div>
+      <div class="arr-col" style="min-width:140px;">
+        <div class="arr-v"></div>
+        <div class="arr-label">JSON payload · &lt;10ms</div>
+        <div class="arr-v"></div>
+        <div class="arrowhead">▼</div>
+      </div>
+    </div>
+
+    <!-- Section divider -->
+    <div class="section-divider">
+      <div class="div-line"></div>
+      <div class="div-label">— your model lives here —</div>
+      <div class="div-line"></div>
+    </div>
+
+    <!-- Tier: FastAPI -->
+    <div class="tier">
+      <div class="tier-label">inference</div>
+      <div class="node n-teal" id="nd-fastapi" onclick="showDetail('fastapi')" style="min-width:200px;">
+        <div class="node-title">FastAPI microservice</div>
+        <div class="node-sub">XGBoost model · Docker container</div>
+        <div class="pill pill-teal">MLflow artifact</div>
+      </div>
+    </div>
+
+    <!-- Arrow down + side arrow to OpenAI -->
+    <div class="arrow-row" style="gap:0; position:relative; height:36px; justify-content:center;">
+      <div class="arr-spacer"></div>
+      <div style="display:flex; gap:48px; align-items:flex-end; min-width:200px; justify-content:center;">
+        <!-- left: straight down to decision -->
+        <div style="display:flex; flex-direction:column; align-items:center; height:36px; justify-content:flex-end;">
+          <div class="arr-v" style="height:36px;"></div>
+          <div class="arrowhead">▼</div>
+        </div>
+        <!-- right: down to explain -->
+        <div style="display:flex; flex-direction:column; align-items:center; height:36px; justify-content:flex-end;">
+          <div class="arr-v" style="height:10px;"></div>
+          <div class="arr-label">OpenAI API</div>
+          <div class="arr-v" style="height:10px;"></div>
+          <div class="arrowhead">▼</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier: Decision + Explain side by side -->
+    <div class="tier" style="gap:16px;">
+      <div class="tier-label">decision</div>
+      <div class="node n-amber" id="nd-decision" onclick="showDetail('decision')" style="min-width:120px;">
+        <div class="node-title">Decision engine</div>
+        <div class="node-sub">Score + threshold</div>
+        <div class="pill pill-amber">&lt;300ms total</div>
+      </div>
+      <div class="node n-teal" id="nd-explain" onclick="showDetail('explain')" style="min-width:130px;">
+        <div class="node-title">NL explanation</div>
+        <div class="node-sub">Plain-language alert</div>
+        <div class="pill pill-teal">OpenAI GPT-4o</div>
+      </div>
+    </div>
+
+    <!-- Two arrows down to outcomes -->
+    <div class="arrow-row" style="gap:0; justify-content:center; height:36px;">
+      <div class="arr-spacer"></div>
+      <div style="display:flex; gap:80px; min-width:266px; justify-content:center; align-items:flex-end;">
+        <div style="display:flex; flex-direction:column; align-items:center; height:36px; justify-content:flex-end;">
+          <div class="arr-v" style="height:36px;"></div>
+          <div class="arrowhead">▼</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; height:36px; justify-content:flex-end;">
+          <div class="arr-v" style="height:36px;"></div>
+          <div class="arrowhead">▼</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier: Outcomes -->
+    <div class="tier" style="gap:10px;">
+      <div class="tier-label">outcome</div>
+      <div class="node n-green" id="nd-approve" onclick="showDetail('approve')" style="min-width:96px;">
+        <div class="node-title">✓ Approve</div>
+        <div class="node-sub">Score &lt; threshold</div>
+      </div>
+      <div class="node n-amber" id="nd-review" onclick="showDetail('review')" style="min-width:96px;">
+        <div class="node-title">⚑ Review</div>
+        <div class="node-sub">Edge cases</div>
+      </div>
+      <div class="node n-red" id="nd-decline" onclick="showDetail('decline')" style="min-width:96px;">
+        <div class="node-title">✕ Decline</div>
+        <div class="node-sub">Score &gt; threshold</div>
+      </div>
+    </div>
+
+    <div style="height:10px;"></div>
+
+    <!-- Section divider -->
+    <div class="section-divider">
+      <div class="div-line"></div>
+      <div class="div-label">— your streamlit dashboard —</div>
+      <div class="div-line"></div>
+    </div>
+
+    <!-- Tier: Dashboard -->
+    <div class="tier">
+      <div class="tier-label">monitor</div>
+      <div class="node n-slate" id="nd-dashboard" onclick="showDetail('dashboard')" style="min-width:260px;">
+        <div class="node-title">📊 Streamlit dashboard</div>
+        <div class="node-sub">Fraud analyst monitoring · Business impact · Model explainability</div>
+        <div class="pill pill-amber">This project</div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ══════════════════ END FLOW ══════════════════ -->
+
+  <!-- ── Detail panel ── -->
+  <div class="detail-panel" id="detail-panel">
+    <h4 id="dp-title">Click any node to learn more</h4>
+    <p  id="dp-body">Tap a component above to see how it works in a real payment system and how your project maps to it.</p>
+  </div>
+
+  <div class="hint">↑ click any component to explore</div>
+
+</div><!-- end arch-wrap -->
+
+<script>
+  var details = {
+    customer: {
+      title: "Card transaction",
+      body:  "A customer taps a card or checks out online. The transaction data — amount, merchant ID, timestamp, location — is instantly sent to the payment processor. Your model needs to return a verdict before the payment terminal times out (typically 3–5 seconds, but fraud scoring is expected in under 300ms)."
+    },
+    gateway: {
+      title: "Payment processor (production only)",
+      body:  "The processor (Stripe, Visa, Mastercard) routes the transaction to your fraud scoring API as a REST call with a JSON payload. Your model sits behind this as a microservice. This component doesn't exist in your portfolio project — you receive pre-labelled historical data instead of a live stream."
+    },
+    fastapi: {
+      title: "FastAPI microservice — your model's production home",
+      body:  "Your XGBoost model, saved via MLflow and packaged in Docker, would be wrapped in a FastAPI endpoint. The endpoint receives a transaction payload, loads the model artifact, runs inference, and returns a fraud_score in milliseconds. Your Docker setup already makes this transition straightforward — the missing piece is a POST /predict endpoint."
+    },
+    explain: {
+      title: "Natural language explanation — your OpenAI integration",
+      body:  "After the model scores a transaction, the top SHAP features are passed to the OpenAI API with a prompt that generates a plain-English explanation. This is exactly what you've already built. In production this runs in parallel to the decision engine so it doesn't add to the critical-path latency."
+    },
+    decision: {
+      title: "Decision engine",
+      body:  "The fraud score is compared to a configurable threshold (e.g. 0.5 at default, 0.3 for aggressive mode). Above threshold → decline or flag for review. The threshold is a business decision, not a model parameter — your Threshold Simulator page in the dashboard demonstrates this trade-off precisely."
+    },
+    approve: {
+      title: "Approve",
+      body:  "Transaction score is below the fraud threshold. Payment proceeds instantly and the decision is logged for model monitoring. Your dashboard shows how changing the threshold affects how many legitimate transactions fall into this bucket — your false alarm rate of 0.09% is 3–5× better than the industry benchmark."
+    },
+    review: {
+      title: "Flag for human review",
+      body:  "Edge cases near the threshold boundary are sent to the fraud ops queue. An analyst reviews the transaction alongside the natural language explanation your model generates via the OpenAI API. Your dashboard's business impact metrics (€8 per review) quantify the real cost of this queue."
+    },
+    decline: {
+      title: "Decline",
+      body:  "Transaction score exceeds the fraud threshold. Payment is blocked and the cardholder is notified. Your model's 0.986 AUC-ROC means very few legitimate transactions reach this bucket. The natural language explanation is also passed to the analyst so they can verify the decision quickly."
+    },
+    dashboard: {
+      title: "Streamlit dashboard — what you built",
+      body:  "In production, this becomes the analyst workstation. Fraud teams use it to review flagged alerts with GPT-4o explanations, monitor model drift over time, adjust thresholds, and quantify business impact. Your dashboard already covers all of this — it reads from pre-computed predictions.csv instead of a live scoring API, which is the only difference."
+    }
+  };
+
+  var activeId = null;
+
+  function showDetail(id) {
+    if (activeId) {
+      var prev = document.getElementById('nd-' + activeId);
+      if (prev) prev.classList.remove('active-node');
+    }
+    var nd = document.getElementById('nd-' + id);
+    if (nd) nd.classList.add('active-node');
+    activeId = id;
+
+    var d = details[id];
+    document.getElementById('dp-title').textContent = d.title;
+    document.getElementById('dp-body').textContent  = d.body;
+  }
+</script>
+
+</body>
+</html>"""
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  GLOBAL CSS  — forces dark background so white/grey text stays readable
@@ -454,7 +1010,7 @@ div[data-baseweb="popover"] li:hover {{
    Add this at the very bottom of your existing <style>
    ══════════════════════════════════════════════════════ */
 
-@media (max-width: 768px) 
+@media (max-width: 768px) {{
 /* ── Tighten page padding ── */
 .block-container {{
     padding-left: 0.8rem !important;
@@ -498,6 +1054,7 @@ div[data-baseweb="popover"] li:hover {{
     flex-direction: column !important;
     gap: 0.4rem !important;
     text-align: center !important;}}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -737,70 +1294,205 @@ def rgba(hex_color: str, alpha: float) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 #  SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
+MOBILE_NAV_CSS = """
+/* ══════════════════════════════════════════════
+   MOBILE BOTTOM NAV  (≤768px)
+   ══════════════════════════════════════════════ */
+ 
+/* Hide sidebar toggle arrow on mobile — we use bottom nav instead */
+@media (max-width: 768px) {
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"] {
+        display: none !important;
+    }
+ 
+    /* Push main content up so bottom nav doesn't cover it */
+    .block-container {
+        padding-bottom: 90px !important;
+    }
+}
+ 
+/* Bottom nav bar */
+.mobile-nav {
+    display: none;
+}
+ 
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: #08122B;
+        border-top: 1px solid #1E2E50;
+        padding: 0;
+        height: 64px;
+        align-items: stretch;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+    }
+ 
+    .mobile-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        padding: 8px 2px;
+        transition: background 0.15s;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+ 
+    .mobile-nav-item:active {
+        background: rgba(29,106,245,0.12);
+    }
+ 
+    .mobile-nav-item.active {
+        background: rgba(0,196,161,0.08);
+        border-top: 2px solid #00C4A1;
+    }
+ 
+    .mobile-nav-icon {
+        font-size: 18px;
+        line-height: 1;
+    }
+ 
+    .mobile-nav-label {
+        font-size: 9px;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #8B9FC2;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+ 
+    .mobile-nav-item.active .mobile-nav-label {
+        color: #00E5BB;
+    }
+}
+"""
+ 
+ 
+# Step 1 — Read page from query param (mobile nav uses this)
+# Add this BEFORE the sidebar block, near the top of your page logic
+
+# Inject mobile nav CSS
+st.markdown(f"<style>{MOBILE_NAV_CSS}</style>", unsafe_allow_html=True)
+
+PAGE_KEYS = {
+    "summary":  "📊  Executive Summary",
+    "overview": "🔭  Project Overview",
+    "explore":  "🔬  Explore the Data",
+    "results":  "🏆  Model Results",
+    "built":    "🛠️  How I Built This",
+}
+ 
+# ── Get page from query params (set by mobile nav) ──────────────────────────
+# If ?page=overview is in the URL, that page is pre-selected
+_qp = st.query_params.get("page", "summary")
+_default_page = PAGE_KEYS.get(_qp, "📊  Executive Summary")
+ 
+# ── Sidebar (desktop) ────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(f"""
     <div style='padding:1.2rem 0 1rem;'>
         <div style='font-family:Epilogue,sans-serif;font-size:1.05rem;font-weight:800;
-                    color:{C["white"]};line-height:1.3;letter-spacing:-0.01em;'>
+                    color:#FFFFFF;line-height:1.3;letter-spacing:-0.01em;'>
             🛡️ Credit Card<br>Fraud Detection
         </div>
         <div style='font-family:JetBrains Mono,monospace;font-size:0.62rem;
-                    color:{C["teal"]};margin-top:5px;letter-spacing:0.14em;
+                    color:#00C4A1;margin-top:5px;letter-spacing:0.14em;
                     text-transform:uppercase;'>ML Portfolio · 2026</div>
     </div>
     """, unsafe_allow_html=True)
     st.markdown("---")
-
+ 
     page = st.radio(
         "nav",
-        ["📊  Executive Summary",
-         "🔭  Project Overview",
-         "🔬  Explore the Data",
-         "🏆  Model Results",
-         "🛠️  How I Built This"],
+        list(PAGE_KEYS.values()),
+        index=list(PAGE_KEYS.values()).index(_default_page),
         label_visibility="collapsed",
     )
     st.markdown("---")
-
-    # ── Refresh button — clears cache so new real data is picked up ──────────
+ 
     if st.button("🔄 Refresh data", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
     st.markdown(f"""
-    <div style='font-size:0.68rem;color:{C["slate"]};margin-top:3px;'>
+    <div style='font-size:0.68rem;color:#8B9FC2;margin-top:3px;'>
         Clears cache and reloads from disk.
-        Use after running your training pipeline.
     </div>
     """, unsafe_allow_html=True)
-
     st.markdown("---")
     st.markdown(f"""
-    <div style='font-size:0.76rem;color:{C["slate"]};line-height:2;'>
+    <div style='font-size:0.76rem;color:#8B9FC2;line-height:2;'>
         <div style='font-family:JetBrains Mono,monospace;font-size:0.62rem;
                     text-transform:uppercase;letter-spacing:0.1em;
-                    color:{C["blue2"]};margin-bottom:5px;'>Live Model</div>
+                    color:#4B8BF7;margin-bottom:5px;'>Live Model</div>
         XGBoost + Optuna<br>
-        <span style='color:{C["teal"]};'>▲</span> AUC-ROC: 0.975<br>
-        <span style='color:{C["teal"]};'>▲</span> Recall: 76.8%<br>
-        <span style='color:{C["amber"]};'>◆</span> Precision: 87.3%<br>
+        <span style='color:#00C4A1;'>▲</span> AUC-ROC: 0.975<br>
+        <span style='color:#00C4A1;'>▲</span> Recall: 76.8%<br>
+        <span style='color:#F5A623;'>◆</span> Precision: 87.3%<br>
         <br>
         <div style='font-family:JetBrains Mono,monospace;font-size:0.62rem;
                     text-transform:uppercase;letter-spacing:0.1em;
-                    color:{C["blue2"]};margin-bottom:5px;'>Dataset</div>
+                    color:#4B8BF7;margin-bottom:5px;'>Dataset</div>
         283,726 transactions<br>
         473 fraud cases (0.17%)<br>
-        European Cardholders Transaction Dataset
+        European Cardholders
     </div>
     """, unsafe_allow_html=True)
     st.markdown("---")
     st.markdown(f"""
-    <a href='https://github.com/puritygikonyo/Credit-Card-Fraud-Detection' target='_blank'
-       style='font-size:0.78rem;color:{C["blue2"]};font-weight:600;'>
+    <a href='https://github.com/puritygikonyo/Credit-Card-Fraud-Detection'
+       target='_blank'
+       style='font-size:0.78rem;color:#4B8BF7;font-weight:600;'>
         ↗ View on GitHub
     </a>
     """, unsafe_allow_html=True)
-
-
+ 
+# ── Determine active page key for mobile nav highlight ───────────────────────
+_active_key = [k for k, v in PAGE_KEYS.items() if v == page][0]
+ 
+# ── Mobile bottom nav (injected as HTML, always rendered) ────────────────────
+# Clicking a tab sets ?page=X in the URL and triggers a rerun
+st.markdown(f"""
+<nav class="mobile-nav" id="mobile-nav">
+    <a class="mobile-nav-item {'active' if _active_key == 'summary'  else ''}"
+       href="?page=summary">
+        <span class="mobile-nav-icon">📊</span>
+        <span class="mobile-nav-label">Summary</span>
+    </a>
+    <a class="mobile-nav-item {'active' if _active_key == 'overview' else ''}"
+       href="?page=overview">
+        <span class="mobile-nav-icon">🔭</span>
+        <span class="mobile-nav-label">Overview</span>
+    </a>
+    <a class="mobile-nav-item {'active' if _active_key == 'explore'  else ''}"
+       href="?page=explore">
+        <span class="mobile-nav-icon">🔬</span>
+        <span class="mobile-nav-label">Explore</span>
+    </a>
+    <a class="mobile-nav-item {'active' if _active_key == 'results'  else ''}"
+       href="?page=results">
+        <span class="mobile-nav-icon">🏆</span>
+        <span class="mobile-nav-label">Results</span>
+    </a>
+    <a class="mobile-nav-item {'active' if _active_key == 'built'    else ''}"
+       href="?page=built">
+        <span class="mobile-nav-icon">🛠️</span>
+        <span class="mobile-nav-label">Built</span>
+    </a>
+</nav>
+""", unsafe_allow_html=True)
+ 
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 0 — EXECUTIVE SUMMARY
 # ══════════════════════════════════════════════════════════════════════════════
@@ -907,7 +1599,7 @@ if "Executive" in page:
             test window for the fraud operations team to review.</div>
             <div class='div' style='margin:1.2rem 0;'></div>
             <div style='font-size:0.8rem;color:{C["slate"]};line-height:1.65;'>
-                At €{AVG_REVIEW_COST:.0f} per review, the total analyst cost is
+                With the assumption of €{AVG_REVIEW_COST:.0f} per review, the total analyst cost is
                 <span style='color:{C["white"]};font-weight:600;'>
                 €{review_cost:,}</span>. The fraud value stopped
                 (€{val_protected:,}) delivers a
@@ -1043,7 +1735,6 @@ if "Executive" in page:
     </div>
     """, unsafe_allow_html=True)
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 #  PAGE 1 — PROJECT OVERVIEW
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1146,6 +1837,19 @@ elif "Overview" in page:
                 <div class='scard-lbl'>{lbl}</div>
                 <div style='font-size:0.72rem;color:{C["slate"]};margin-top:5px;'>{ctx}</div>
             </div>""", unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class='section-eyebrow'>Production Architecture</div>
+    <div class='section-heading'>How this model works in the real world</div>
+    <div class='section-sub'>
+        Fraud costs financial institutions billions annually — yet few detection 
+        systems tell analysts <em>why</em> a transaction was flagged. This diagram 
+        shows how your model would sit inside a real payment system, and where 
+        this portfolio project maps to that architecture.
+    </div>
+    """, unsafe_allow_html=True)
+
+    components.html(ARCHITECTURE_DIAGRAM_HTML, height=900, scrolling=False)
 
     st.markdown(f"""
     <div class='footer'>
@@ -1834,12 +2538,13 @@ elif "Built" in page:
     for i, item in enumerate(res["timeline"]):
         col = tl1 if i % 2 == 0 else tl2
         is_last = (i == len(res["timeline"]) - 1)
+        tl_line = "" if is_last else "<div class='tl-line' style='min-height:40px;'></div>"
         with col:
             st.markdown(f"""
             <div class='tl-row'>
                 <div class='tl-left'>
                     <div class='tl-dot'></div>
-                    {"" if is_last else "<div class='tl-line' style='min-height:40px;'></div>"}
+                    {tl_line}
                 </div>
                 <div>
                     <div class='tl-day'>{item['day']}</div>
@@ -1891,17 +2596,17 @@ elif "Built" in page:
 
     gaps = [
         ("1","HIGH", C["teal"],  "Threshold Optimisation",
-         "Lower from 0.50 → ~0.30. Expected +8–12pp recall with no retraining. Est. 2 hours."),
+         "Lower from 0.50 → ~0.30."),
         ("2","HIGH", C["teal"],  "Financial Loss Data",
-         "Link predictions to actual transaction £/€ values for real ROI calculation. Est. 1 day."),
+         "Link predictions to actual transaction £/€ values for real ROI calculation."),
         ("3","HIGH", C["teal"],  "Real-Time Prediction API",
-         "FastAPI wrapper around model .pkl for live transaction scoring. Est. 1–2 days."),
+         "FastAPI wrapper around model .pkl for live transaction scoring."),
         ("4","MED",  C["amber"], "Model Monitoring Plan",
-         "Weekly recall/precision tracking with automated retraining trigger. Est. 3–5 days."),
+         "Weekly recall/precision tracking with automated retraining trigger."),
         ("5","MED",  C["amber"], "Explainability (SHAP)",
-         "SHAP force plots for regulatory compliance and analyst understanding. Est. 1–2 weeks."),
+         "SHAP force plots for regulatory compliance and analyst understanding."),
         ("6","LOW",  C["blue"],  "A/B Shadow Deployment",
-         "Run new model in parallel before switching production traffic. Est. 3–5 days."),
+         "Run new model in parallel before switching production traffic."),
     ]
     p_styles = {
         "HIGH": ("rgba(0,196,161,0.12)",  C["teal2"]),
@@ -1970,9 +2675,7 @@ elif "Built" in page:
 
     st.markdown(f"""
     <div class='footer'>
-        <div class='footer-txt'>🛡️ Credit Card Fraud Detection · ML Portfolio · April 2026</div>
+        <div class='footer-txt'>🛡️ Credit Card Fraud Detection · Purity Gikonyo ML Portfolio · April 2026</div>
         <div class='footer-txt'>Built with Python · Questions? Reach out via GitHub.</div>
     </div>
     """, unsafe_allow_html=True)
-
-
